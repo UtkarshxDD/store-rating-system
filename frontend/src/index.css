@@ -1,0 +1,10 @@
+@import "tailwindcss";
+
+/* Normalize body so the app uses full width and light theme by default */
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  background-color: #ffffff;
+  color: #111827; /* gray-900 */
+}

@@ -16,9 +16,32 @@ const app = express();
 app.use(helmet());
 // CORS: in development allow any localhost origin; in production use FRONTEND_URL
 const isProduction = process.env.NODE_ENV === 'production';
+
+// Define allowed origins
+const allowedOrigins = [
+  'http://localhost:5173', // Vite dev server
+  'http://localhost:3000', // Alternative dev port
+  'https://your-frontend-app.vercel.app', // Replace with your Vercel URL
+  process.env.FRONTEND_URL // From environment variable
+].filter(Boolean); // Remove undefined values
+
 app.use(cors({
-  origin: isProduction ? (process.env.FRONTEND_URL || 'http://localhost:5173') : true,
-  credentials: true
+  origin: isProduction 
+    ? (origin, callback) => {
+        // Allow requests with no origin (like mobile apps or curl requests)
+        if (!origin) return callback(null, true);
+        
+        if (allowedOrigins.indexOf(origin) !== -1) {
+          callback(null, true);
+        } else {
+          console.log('CORS blocked origin:', origin);
+          callback(new Error('Not allowed by CORS'));
+        }
+      }
+    : true,
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
 // Rate limiting

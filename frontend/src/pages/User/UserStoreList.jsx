@@ -15,9 +15,10 @@ const UserStoreList = () => {
   });
 
   const [ratingStore, setRatingStore] = useState(null);
-  const [newRating, setNewRating] = useState(0);
+  const [newRating, setNewRating] = useState(1);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
 
   const fetchStores = async () => {
     setLoading(true);
@@ -40,10 +41,25 @@ const UserStoreList = () => {
     setSubmitting(true);
     setError('');
     try {
-      await apiService.submitRating(ratingStore.id, newRating);
+      const response = await apiService.submitRating(ratingStore.id, newRating);
+      
+      // Update the store's rating in the local state immediately
+      if (response.updatedStore) {
+        setStores(prevStores => 
+          prevStores.map(store => 
+            store.id === response.updatedStore.id 
+              ? { ...store, rating: response.updatedStore.rating, total_ratings: response.updatedStore.total_ratings }
+              : store
+          )
+        );
+      }
+      
+      setSuccessMessage(`Rating submitted successfully! ${ratingStore.name} now has ${response.updatedStore.rating} stars.`);
       setRatingStore(null);
-      setNewRating(0);
-      fetchStores();
+      setNewRating(1);
+      
+      // Clear success message after 3 seconds
+      setTimeout(() => setSuccessMessage(''), 3000);
     } catch (err) {
       setError(err.message || 'Failed to submit rating');
     } finally {
@@ -55,6 +71,18 @@ const UserStoreList = () => {
 
   return (
     <div className="space-y-6">
+      {successMessage && (
+        <div className="bg-green-50 border border-green-200 text-green-600 px-4 py-3 rounded-md text-sm">
+          {successMessage}
+        </div>
+      )}
+      
+      {error && (
+        <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-md text-sm">
+          {error}
+        </div>
+      )}
+
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <Input
           className="sm:max-w-sm"
@@ -82,11 +110,7 @@ const UserStoreList = () => {
               </tr>
             )}
 
-            {!loading && error && (
-              <tr>
-                <td colSpan="5" className="p-6 text-center text-red-600">{error}</td>
-              </tr>
-            )}
+
 
             {!loading && !error && stores.length === 0 && (
               <tr>
@@ -102,11 +126,16 @@ const UserStoreList = () => {
                 <td className="px-6 py-4 flex items-center">
                   <StarRating rating={parseFloat(store.rating || 0)} readonly />
                   <span className="ml-2 text-sm text-gray-600">
-                    {store.rating ?? '0.0'} ({store.total_ratings ?? 0} reviews)
+                    {store.rating ? `${store.rating}` : 'No ratings'} ({store.total_ratings || 0} reviews)
                   </span>
                 </td>
                 <td className="px-6 py-4 text-right">
-                  <Button size="sm" onClick={() => { setRatingStore(store); setNewRating(0); }}>
+                  <Button size="sm" onClick={() => { 
+                    setRatingStore(store); 
+                    setNewRating(1); 
+                    setError(''); 
+                    setSuccessMessage(''); 
+                  }}>
                     Rate
                   </Button>
                 </td>
@@ -138,7 +167,7 @@ const UserStoreList = () => {
             </div>
 
             <div className="flex gap-3">
-              <Button onClick={submitRating} disabled={submitting || newRating === 0}>
+              <Button onClick={submitRating} disabled={submitting || newRating < 1}>
                 {submitting ? 'Submitting...' : 'Submit'}
               </Button>
               <Button variant="outline" onClick={() => setRatingStore(null)}>

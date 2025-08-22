@@ -8,8 +8,8 @@ const getStores = async (req, res) => {
   try {
     let query = `
       SELECT 
-        s.id, s.name, s.address, s.created_at,
-        COALESCE(AVG(r.rating), 0) as overall_rating,
+        s.id, s.name, s.email, s.address, s.created_at,
+        COALESCE(AVG(r.rating), 0) as rating,
         COUNT(r.id) as total_ratings,
         ur.rating as user_rating
       FROM stores s 
@@ -26,8 +26,8 @@ const getStores = async (req, res) => {
       params.push(`%${search}%`);
     }
 
-    query += ` GROUP BY s.id, s.name, s.address, s.created_at, ur.rating`;
-    query += ` ORDER BY ${sortBy === 'overall_rating' ? 'overall_rating' : `s.${sortBy}`} ${sortOrder.toUpperCase()}`;
+    query += ` GROUP BY s.id, s.name, s.email, s.address, s.created_at, ur.rating`;
+    query += ` ORDER BY ${sortBy === 'rating' ? 'rating' : `s.${sortBy}`} ${sortOrder.toUpperCase()}`;
     query += ` LIMIT $${++paramCount} OFFSET $${++paramCount}`;
     
     params.push(limit, offset);
@@ -50,8 +50,9 @@ const getStores = async (req, res) => {
       stores: result.rows.map(store => ({
         id: store.id,
         name: store.name,
+        email: store.email,
         address: store.address,
-        overall_rating: parseFloat(store.overall_rating).toFixed(1),
+        rating: parseFloat(store.rating).toFixed(1),
         total_ratings: parseInt(store.total_ratings),
         user_rating: store.user_rating,
         created_at: store.created_at
@@ -91,9 +92,32 @@ const submitRating = async (req, res) => {
       RETURNING *
     `, [userId, storeId, rating]);
 
+    // Get updated store data with new average rating
+    const updatedStoreResult = await pool.query(`
+      SELECT 
+        s.id, s.name, s.email, s.address, s.created_at,
+        COALESCE(AVG(r.rating), 0) as rating,
+        COUNT(r.id) as total_ratings
+      FROM stores s 
+      LEFT JOIN ratings r ON s.id = r.store_id
+      WHERE s.id = $1
+      GROUP BY s.id, s.name, s.email, s.address, s.created_at
+    `, [storeId]);
+
+    const updatedStore = updatedStoreResult.rows[0];
+
     res.json({
       message: 'Rating submitted successfully',
-      rating: result.rows[0]
+      rating: result.rows[0],
+      updatedStore: {
+        id: updatedStore.id,
+        name: updatedStore.name,
+        email: updatedStore.email,
+        address: updatedStore.address,
+        rating: parseFloat(updatedStore.rating).toFixed(1),
+        total_ratings: parseInt(updatedStore.total_ratings),
+        created_at: updatedStore.created_at
+      }
     });
   } catch (error) {
     console.error('Submit rating error:', error);

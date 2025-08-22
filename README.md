@@ -1,3 +1,8 @@
+
+# Default admin credentials:
+Email: admin@example.com
+Password: Admin@123
+
 # 🏪 Store Rating System
 
 A full-stack web application that allows users to rate stores, built with React (frontend) and Node.js/Express (backend) with PostgreSQL database.

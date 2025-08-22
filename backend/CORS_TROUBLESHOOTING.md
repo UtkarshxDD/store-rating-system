@@ -9,9 +9,8 @@ In your Render backend service dashboard:
 1. Go to your service → "Environment" tab
 2. Add/update these variables:
    ```
-   FRONTEND_URL=https://your-frontend-app.vercel.app
+   FRONTEND_URL=https://store-rating-system-8n1d.vercel.app
    ```
-   (Replace with your actual Vercel frontend URL)
 
 ### Step 2: Update Vercel Environment Variables
 
@@ -20,9 +19,8 @@ In your Vercel frontend project:
 1. Go to your project → "Settings" → "Environment Variables"
 2. Add this variable:
    ```
-   VITE_API_BASE_URL=https://your-backend-app.onrender.com/api
+   VITE_API_BASE_URL=https://store-rating-system-04su.onrender.com/api
    ```
-   (Replace with your actual Render backend URL)
 
 ### Step 3: Redeploy Both Services
 
@@ -85,9 +83,9 @@ In your Vercel frontend project:
 
 ## 🔗 Example URLs
 
-**Backend Health Check**: `https://your-backend-app.onrender.com/health`
-**API Base**: `https://your-backend-app.onrender.com/api`
-**Frontend**: `https://your-frontend-app.vercel.app`
+**Backend Health Check**: `https://store-rating-system-04su.onrender.com/health`
+**API Base**: `https://store-rating-system-04su.onrender.com/api`
+**Frontend**: `https://store-rating-system-8n1d.vercel.app`
 
 ## 📞 Still Having Issues?
 

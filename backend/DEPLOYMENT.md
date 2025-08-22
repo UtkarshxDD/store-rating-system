@@ -55,7 +55,7 @@ DB_NAME=roxiler_db
 DB_USER=roxiler_user
 DB_PASSWORD=your-database-password
 JWT_SECRET=your-super-secret-jwt-key-here
-FRONTEND_URL=https://your-frontend-app.onrender.com
+FRONTEND_URL=https://store-rating-system-8n1d.vercel.app
 ```
 
 ## Step 4: Deploy and Test

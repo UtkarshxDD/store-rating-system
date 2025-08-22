@@ -21,7 +21,7 @@ const isProduction = process.env.NODE_ENV === 'production';
 const allowedOrigins = [
   'http://localhost:5173', // Vite dev server
   'http://localhost:3000', // Alternative dev port
-  'https://your-frontend-app.vercel.app', // Replace with your Vercel URL
+  'https://store-rating-system-8n1d.vercel.app', // Your Vercel frontend URL
   process.env.FRONTEND_URL // From environment variable
 ].filter(Boolean); // Remove undefined values
 

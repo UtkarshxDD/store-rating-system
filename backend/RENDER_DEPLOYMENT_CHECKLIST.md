@@ -27,7 +27,7 @@
 - [ ] `DB_USER` = [your-database-user]
 - [ ] `DB_PASSWORD` = [your-database-password]
 - [ ] `JWT_SECRET` = [strong-secret-key]
-- [ ] `FRONTEND_URL` = [your-frontend-url]
+- [ ] `FRONTEND_URL` = `https://store-rating-system-8n1d.vercel.app`
 
 ## 🚀 Deployment Steps
 
